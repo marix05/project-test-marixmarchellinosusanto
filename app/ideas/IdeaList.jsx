@@ -228,5 +228,3 @@ const IdeaList = () => {
 };
 
 export default IdeaList;
-
-// s
