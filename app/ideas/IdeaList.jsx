@@ -1,8 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-
-// icon
-import { GrPrevious, GrNext } from "react-icons/gr";
+import axios from "axios";
 
 function convertDate(d) {
   const date = new Date(d);
@@ -13,39 +11,39 @@ function convertDate(d) {
 
 const IdeaList = () => {
   // fetch data
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
+  const [perPage, setPerPage] = useState(10);
+  const [sortBy, setSortBy] = useState("newest");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setLoading] = useState(true);
 
-  const fetchData = async (
-    pageNumber = 1,
-    pageSize = 10,
-    sortBy = "-published_at"
-  ) => {
-    const url = `https://suitmedia-backend.suitdev.com/api/ideas?page[number]=${pageNumber}&page[size]=${pageSize}&append[]=small_image&append[]=medium_image&sort=${sortBy}`;
-    try {
-      const response = await fetch(url, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok.");
-      }
-
-      const data = await response.json();
-      setData(data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          "https://suitmedia-backend.suitdev.com/api/ideas",
+          {
+            params: {
+              "page[number]": currentPage,
+              "page[size]": perPage,
+              append: ["small_image", "medium_image"],
+              sort: sortBy === "newest" ? "-published_at" : "published_at",
+            },
+          }
+        );
+
+        setData(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchData();
-  }, []);
+  }, [perPage, sortBy, currentPage]);
 
   if (isLoading)
     return (
@@ -60,6 +58,49 @@ const IdeaList = () => {
       </div>
     );
 
+  const handlePerPageChange = (e) => {
+    setPerPage(parseInt(e.target.value, 10));
+  };
+
+  const handleSortByChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const renderPageNumbers = () => {
+    const totalPages = Math.ceil(data?.meta?.total / perPage);
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+    const startIndex = Math.max(
+      0,
+      currentPage - Math.floor(maxVisiblePages / 2)
+    );
+    const endIndex = Math.min(totalPages - 1, startIndex + maxVisiblePages - 1);
+
+    const slicedPages = pages.slice(startIndex, endIndex + 1);
+
+    return slicedPages.map((pageNumber) => (
+      <button
+        key={pageNumber}
+        className={`px-3 py-1 rounded-md ${
+          currentPage === pageNumber
+            ? "bg-orange-500 text-white"
+            : "hover:bg-orange-500 hover:text-white"
+        }`}
+        onClick={() => handlePageChange(pageNumber)}
+      >
+        {pageNumber}
+      </button>
+    ));
+  };
+
   const ideas = data.data;
   const meta = data.meta;
 
@@ -72,7 +113,12 @@ const IdeaList = () => {
         <div className="filter flex flex-wrap gap-4 justify-center">
           <div className="dropdown-menu">
             <label htmlFor="pageSize">Show per page: </label>
-            <select name="pageSize" id="pageSize">
+            <select
+              name="pageSize"
+              id="pageSize"
+              onChange={handlePerPageChange}
+              value={perPage}
+            >
               <option value="10">10</option>
               <option value="20">20</option>
               <option value="50">50</option>
@@ -80,9 +126,14 @@ const IdeaList = () => {
           </div>
           <div className="dropdown-menu">
             <label htmlFor="sortBy">Sort by: </label>
-            <select name="sortBy" id="sortBy">
-              <option value="-published_at">Newest</option>
-              <option value="published_at">Latest</option>
+            <select
+              name="sortBy"
+              id="sortBy"
+              onChange={handleSortByChange}
+              value={sortBy}
+            >
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
             </select>
           </div>
         </div>
@@ -121,29 +172,24 @@ const IdeaList = () => {
         })}
       </div>
 
-      <div className="paggination flex justify-center my-20">
-        <div className="flex flex-wrap justify-center gap-2">
-          {meta.links.map((link, index) => {
-            return (
-              <div
-                key={index}
-                className={`py-1 px-2 text-xs ${
-                  link.active
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary"
-                } ${!link.url && "relative bg-fill-shadow-sm"}`}
-              >
-                {index == 0 ? (
-                  <GrPrevious />
-                ) : index == meta.links.length - 1 ? (
-                  <GrNext />
-                ) : (
-                  link.label
-                )}
-              </div>
-            );
-          })}
-        </div>
+      <div className="flex justify-center mt-4">
+        <nav className="flex items-center gap-4">
+          <button
+            className="px-3 py-1 rounded-md bg-orange-500 text-white"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <span className="mr-2">&#60;</span>
+          </button>
+          {renderPageNumbers()}
+          <button
+            className="px-3 py-1 rounded-md bg-orange-500 text-white"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === Math.ceil(data?.meta?.total / perPage)}
+          >
+            <span className="mr-2">&#62;</span>
+          </button>
+        </nav>
       </div>
     </div>
   );
