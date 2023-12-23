@@ -16,16 +16,34 @@ function convertDate(d) {
 const IdeaList = () => {
   // fetch data
   const [data, setData] = useState([]);
+  const [isLoading, setLoading] = useState(true);
   const [perPage, setPerPage] = useState(() => {
-    return parseInt(window.localStorage.getItem("perPage"), 10) || 10;
+    if (typeof window !== "undefined") {
+      const storedPerPage = parseInt(
+        window.localStorage.getItem("perPage"),
+        10
+      );
+      return !isNaN(storedPerPage) ? storedPerPage : 10;
+    }
+    return 10;
   });
   const [sortBy, setSortBy] = useState(() => {
-    return window.localStorage.getItem("sortBy") || "newest";
+    if (typeof window !== "undefined") {
+      const storedSortBy = window.localStorage.getItem("sortBy");
+      return storedSortBy || "newest";
+    }
+    return "newest";
   });
   const [currentPage, setCurrentPage] = useState(() => {
-    return parseInt(window.localStorage.getItem("currentPage"), 10) || 1;
+    if (typeof window !== "undefined") {
+      const storedCurrentPage = parseInt(
+        window.localStorage.getItem("currentPage"),
+        10
+      );
+      return !isNaN(storedCurrentPage) ? storedCurrentPage : 1;
+    }
+    return 1;
   });
-  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -161,7 +179,7 @@ const IdeaList = () => {
               key={index}
             >
               <img
-                src={idea.medium_image[0].url}
+                src={idea.medium_image[0]?.url}
                 className="object-cover h-[200px] w-full rounded-t-[10px]"
                 loading="lazy"
                 alt=""
