@@ -92,7 +92,7 @@ const IdeaList = () => {
     return slicedPages.map((pageNumber) => (
       <button
         key={pageNumber}
-        className={`px-3 py-1 rounded-md ${
+        className={`py-1 px-2 rounded-sm text-sm ${
           currentPage === pageNumber
             ? "bg-orange-500 text-white"
             : "hover:bg-orange-500 hover:text-white"
@@ -175,26 +175,22 @@ const IdeaList = () => {
         })}
       </div>
 
-      <div className="flex justify-center mt-4">
-        <nav className="flex items-center gap-4">
+      <div className="flex justify-center mt-20">
+        <nav className="flex items-center flex-wrap gap-4">
           <button
-            className="px-3 py-1 rounded-md bg-orange-500 text-white"
+            className="py-1 px-2 rounded-sm bg-orange-500 text-white"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <span className="mr-2">
-              <GrPrevious />
-            </span>
+            <GrPrevious />
           </button>
           {renderPageNumbers()}
           <button
-            className="px-3 py-1 rounded-md bg-orange-500 text-white"
+            className="py-1 px-2 rounded-sm bg-orange-500 text-white"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === Math.ceil(data?.meta?.total / perPage)}
           >
-            <span className="mr-2">
-              <GrNext />
-            </span>
+            <GrNext />
           </button>
         </nav>
       </div>
