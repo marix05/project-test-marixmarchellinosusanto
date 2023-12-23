@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+// icon
+import { GrPrevious, GrNext } from "react-icons/gr";
+
 function convertDate(d) {
   const date = new Date(d);
 
@@ -179,7 +182,9 @@ const IdeaList = () => {
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <span className="mr-2">&#60;</span>
+            <span className="mr-2">
+              <GrPrevious />
+            </span>
           </button>
           {renderPageNumbers()}
           <button
@@ -187,7 +192,9 @@ const IdeaList = () => {
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === Math.ceil(data?.meta?.total / perPage)}
           >
-            <span className="mr-2">&#62;</span>
+            <span className="mr-2">
+              <GrNext />
+            </span>
           </button>
         </nav>
       </div>
