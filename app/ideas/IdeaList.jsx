@@ -12,15 +12,9 @@ function convertDate(d) {
 const IdeaList = () => {
   // fetch data
   const [data, setData] = useState([]);
-  const [perPage, setPerPage] = useState(() => {
-    return parseInt(localStorage.getItem("perPage")) || 10;
-  });
-  const [sortBy, setSortBy] = useState(() => {
-    return localStorage.getItem("sortBy") || "newest";
-  });
-  const [currentPage, setCurrentPage] = useState(() => {
-    return parseInt(localStorage.getItem("currentPage")) || 1;
-  });
+  const [perPage, setPerPage] = useState(10);
+  const [sortBy, setSortBy] = useState("newest");
+  const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -109,12 +103,6 @@ const IdeaList = () => {
 
   const ideas = data.data;
   const meta = data.meta;
-
-  useEffect(() => {
-    localStorage.setItem("perPage", perPage);
-    localStorage.setItem("sortBy", sortBy);
-    localStorage.setItem("currentPage", currentPage);
-  }, [perPage, sortBy, currentPage]);
 
   return (
     <div className="container my-14 mx-auto">
