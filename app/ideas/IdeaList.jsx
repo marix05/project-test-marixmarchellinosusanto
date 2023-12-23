@@ -108,7 +108,7 @@ const IdeaList = () => {
   const renderPageNumbers = () => {
     const totalPages = Math.ceil(meta.total / perPage);
     const pages = [];
-    const maxVisiblePages = 5;
+    const maxVisiblePages = 7;
 
     for (let i = 1; i <= totalPages; i++) {
       pages.push(i);
@@ -139,9 +139,9 @@ const IdeaList = () => {
   return (
     <div className="container my-14 mx-auto">
       <div className="text-sm w-full flex flex-wrap gap-4 flex-col justify-center md:flex-row md:justify-between">
-        <span>
+        <p className="text-center">
           Showing {meta.from} - {meta.to} of {meta.total}
-        </span>
+        </p>
         <div className="filter flex flex-wrap gap-4 justify-center">
           <div className="dropdown-menu">
             <label htmlFor="pageSize">Show per page: </label>
@@ -205,7 +205,7 @@ const IdeaList = () => {
       </div>
 
       <div className="flex justify-center mt-20">
-        <nav className="flex items-center flex-wrap gap-4">
+        <nav className="flex items-center justify-center flex-wrap gap-4">
           <button
             className="py-1 px-2 rounded-sm bg-orange-500 text-white"
             onClick={() => handlePageChange(currentPage - 1)}
