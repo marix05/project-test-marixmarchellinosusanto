@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -16,13 +17,13 @@ const IdeaList = () => {
   // fetch data
   const [data, setData] = useState([]);
   const [perPage, setPerPage] = useState(() => {
-    return parseInt(localStorage.getItem("perPage"), 10) || 10;
+    return parseInt(window.localStorage.getItem("perPage"), 10) || 10;
   });
   const [sortBy, setSortBy] = useState(() => {
-    return localStorage.getItem("sortBy") || "newest";
+    return window.localStorage.getItem("sortBy") || "newest";
   });
   const [currentPage, setCurrentPage] = useState(() => {
-    return parseInt(localStorage.getItem("currentPage"), 10) || 1;
+    return parseInt(window.localStorage.getItem("currentPage"), 10) || 1;
   });
   const [isLoading, setLoading] = useState(true);
 
